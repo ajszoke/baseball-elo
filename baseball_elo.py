@@ -363,7 +363,7 @@ def report():
 	lastReddit = open('lastReddit.txt', 'r+')
 	oldSort = eval(lastReddit.read())
 	newSort = sorted(ratings.items(), key=lambda team: team[-1][-1], reverse=True)
-	print("Team | Rating | Change | Instantaneous W-L | Expected W-L\n:---:|:---:|:---:|:---:|:----:")
+	print("Team | Rating | Change | Instantaneous W-L\* | Expected W-L\**\n:---:|:---:|:---:|:---:|:----:")
 	for x in range(0, len(teams)):
 		team = newSort[x][0]
 		oldRank = oldSort[team][0]
@@ -393,6 +393,8 @@ def report():
 		print(" (", plusOrMinus(newElo-oldElo), round(abs(newElo-oldElo), 2), ") |", end=" ")
 		teamRec = seasonWins(team)
 		print(teamRec.curW, "–", teamRec.curL, "|", teamRec.expW, "–", teamRec.expL)
+		print("^\*How ^well ^a ^team ^is ^*currently* ^playing; ^that ^is, ^their ^expected ^2015 ^record ^if ^the ^season ^started ^today")
+		print("^\**Team's ^expected ^2015 ^record ^given ^their ^current ^record ^and ^Elo ^rating")
 	mainOpt()
 	
 # Attempts to resolve team-does-not-exist errors elsewhere in the program.	
