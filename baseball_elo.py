@@ -25,6 +25,7 @@
 '''
 
 import sys
+import collections
 from decimal import *
 import operator
 import os.path
@@ -346,16 +347,53 @@ def progOpts():
 			print("Error: score average outside acceptable bounds")
 	mainOpt()
 	
+# Aesthetic subroutine that takes a number and returns a "+" if positive, "–" if negative, or "±" if 0.
+def plusOrMinus(num):
+	if   (num > 0):
+		return "+"
+	elif (num < 0):
+		return "–"
+	else:
+		return "±"
+	
 # Subroutine which prints to the console a table in Markdown syntax a sorted ranking of teams' ratings,
 # along with other stats for each team such as change since last rating, W-L info, etc.
+# TODO best/worst points in season
 def report():
 	lastReddit = open('lastReddit.txt', 'r+')
 	oldSort = eval(lastReddit.read())
 	newSort = sorted(ratings.items(), key=lambda team: team[-1][-1], reverse=True)
-	print("Team | Rating | Change | Expected W-L | Instantaneous W-L\n:---:|:---:|:---:|:---:|:----:")
+	print("Team | Rating | Change | Instantaneous W-L | Expected W-L\n:---:|:---:|:---:|:---:|:----:")
 	for x in range(0, len(teams)):
-		print(flairify(newSort[x][0]), newSort[x][0], "| {0:4.2f}".format(newSort[x][1][-1]))
-	return
+		team = newSort[x][0]
+		oldRank = oldSort[team][0]
+		newRank = x+1
+		absRankChg = abs(newRank-oldRank)
+		
+		oldElo = oldSort[team][1]
+		newElo = ratings[team][-1]
+		
+		rankDir = ""
+		if(newRank < oldRank):
+			rankChg = "▲ " + str(absRankChg)
+		elif(newRank > oldRank):
+			rankChg = "▼ " + str(absRankChg)
+		else:
+			rankChg = "―"
+		print(flairify(team), team, "| {0:4.2f} | ".format(newSort[x][1][-1]), end="")
+		try:
+			print(rankChg, end="")
+		except UnicodeEncodeError:
+			if(newRank < oldRank):
+				print(" &uarr;" + str(absRankChg))
+			elif(newRank > oldRank):
+				print(" &uarr;" + str(absRankChg))
+			else:
+				print("-")
+		print(" (", plusOrMinus(newElo-oldElo), round(abs(newElo-oldElo), 2), ") |", end=" ")
+		teamRec = seasonWins(team)
+		print(teamRec.curW, "–", teamRec.curL, "|", teamRec.expW, "–", teamRec.expL)
+	mainOpt()
 	
 # Attempts to resolve team-does-not-exist errors elsewhere in the program.	
 def badName(bad):
@@ -391,25 +429,16 @@ def teamMinElo(team):
 		return ratings[team].index(minElo)
 	
 # TODO pull inputs out into another subroutine to make this one automatic	
-def seasonWins():
-	team = input("Enter team abbreviation, or enter 'X' to return to the main menu: ")
-	team = team.upper()
-	if team == "X":
-		mainOpt()
-	if team not in teams:
-		print("Team invalid")
-		seasonWins()
+def seasonWins(team):
 	EloBaseWins = 162*expRes(ratings[team][-1], 1500)
 	EloBaseLosses = 162 - EloBaseWins
 	curWins = countTeamWins(team)
 	expWins = curWins + (162 - len(ratings[team])+1)*expRes(ratings[team][-1], 1500)
 	expLosses = 162 - expWins
 	
-	gp = len(ratings[team]) - 1
-	
-	print("\n    ", team, "is CURRENTLY playing like a team with a(n)", round(EloBaseWins), "-", round(EloBaseLosses), "record")
-	print("     and is EXPECTED to finish the season with a(n)", round(expWins), "-", round(expLosses), "record\n")
-	seasonWins()
+	expRec = collections.namedtuple('expRec', 'curW, curL, expW, expL')
+	teamRec = expRec(round(EloBaseWins), round(EloBaseLosses), round(expWins), round(expLosses))
+	return teamRec
 	
 # Accepts decimal odds of a team winning and prints a "moneyline", or American, representation of those odds	
 def probToAmOdds(dec):
@@ -422,8 +451,9 @@ def probToAmOdds(dec):
 		AmOdds = round(line,2)
 	return AmOdds
 
-def mainOpt():
-	goto = input("""\
+def mainOpt(goto=0):
+	if(goto==0):
+		goto = input("""\
 	
 Main menu:
     1. Enter regular season game results
@@ -435,8 +465,8 @@ Main menu:
     7. Program options
     8. Close the program
 Enter a selection: """)
-	goto = int(goto)
-	print("")
+		goto = int(goto)
+	print()
 	if goto == 1:
 		gameIn()
 	elif goto == 2:
@@ -444,7 +474,18 @@ Enter a selection: """)
 	elif goto == 3:
 		prob()
 	elif goto == 4:
-		seasonWins()
+		team = input("Enter team abbreviation, or enter 'X' to return to the main menu: ")
+		team = team.upper()
+		if team == "X":
+			mainOpt()
+		elif team not in teams:
+			print("Team invalid")
+			mainOpt(goto=4)
+		else:
+			teamRec = seasonWins(team)
+			print("\n    ", team, "is CURRENTLY playing like a team with a(n)", teamRec.curW, "-", teamRec.curL, "record")
+			print("     and is EXPECTED to finish the season with a(n)", teamRec.expW, "-", teamRec.expL, "record")
+			mainOpt(goto=4)
 	elif goto == 5:
 		report()
 	elif goto == 6:
