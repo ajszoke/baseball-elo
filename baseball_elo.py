@@ -95,8 +95,7 @@ def gameIn(k=4, hadv=25, again=0, at="None", ht="None",
     while ht not in teams:
         ht = input("Enter home team abbreviation: ")
         ht = ht.upper()
-        if ht.lower() == "x":
-            mainOpt()
+        if   ht.lower() == "x": mainOpt()
         elif ht.lower() == "undo":
             try:
                 print("")
@@ -151,8 +150,7 @@ def chgElo(ht, at, htr, atr, k=4, hadv=25):
     else:
         W = 0
 
-    mov = abs(atr-htr)
-    movI = mov**(1/3)
+    movI = abs(atr-htr)**(1/3)
     htelochg = k * movI * (W - expRes(htelo_old, atelo_old, hadv))
     W = 1 - W
     atelochg = k * movI * (W - (1-expRes(htelo_old, atelo_old, hadv)))
@@ -180,8 +178,7 @@ def lookup():
 ELO ratings, or enter 'x' to return to the main menu:"), end="")
     team = input(" ")
     team = team.upper()
-    if team.lower() == "x":
-        mainOpt()
+    if   team.lower() == "x": mainOpt()
     elif team.lower() == "all":
         while True:
             sort = input('Sort by name or rating? ')
@@ -223,10 +220,8 @@ ELO ratings, or enter 'x' to return to the main menu:"), end="")
         print("")
 
     again = input("Look up/edit more teams? (y/n): ")
-    if again.lower() in ('y', 'ye', 'yes'):
-        lookup()
-    else:
-        mainOpt()
+    if again.lower() in ('y', 'ye', 'yes'): lookup()
+    else: mainOpt()
 
 # Provides win probabilities for any user-specified matchup at teams at their
 # current skill levels. Returns percentage and American odds.
@@ -248,74 +243,42 @@ def prob():
     print('     ', t2.ljust(3), ' win probability: ',
           round(100*(1-t1prob), 2), '% (', probToAmOdds(1-t1prob), ')')
     again = input("Calculate more odds? (y/n): ")
-    if again.lower() in ('y', 'ye', 'yes'):
-        prob()
-    else:
-        mainOpt()
+    if again.lower() in ('y', 'ye', 'yes'): prob()
+    else: mainOpt()
 
 # Given a team abbreviation, returns a string used in Reddit markdown to show
 # the team's flair logo
 def flairify(abr):
-    if abr == "ARI":
-        return "[](/r/azdiamondbacks)"
-    elif abr == "ATL":
-        return "[](/r/Braves)"
-    elif abr == "BAL":
-        return "[](/r/Orioles)"
-    elif abr == "BOS":
-        return "[](/r/RedSox)"
-    elif abr == "CHC":
-        return "[](/r/Cubs)"
-    elif abr == "CWS":
-        return "[](/r/WhiteSox)"
-    elif abr == "CIN":
-        return "[](/r/Reds)"
-    elif abr == "CLE":
-        return "[](/r/WahoosTipi)"
-    elif abr == "COL":
-        return "[](/r/ColoradoRockies)"
-    elif abr == "DET":
-        return "[](/r/MotorCityKitties)"
-    elif abr == "HOU":
-        return "[](/r/Astros)"
-    elif abr == "KC":
-        return "[](/r/KCRoyals)"
-    elif abr == "LAA":
-        return "[](/r/AngelsBaseball)"
-    elif abr == "LAD":
-        return "[](/r/Dodgers)"
-    elif abr == "MIA":
-        return "[](/r/letsgofish)"
-    elif abr == "MIL":
-        return "[](/r/Brewers)"
-    elif abr == "MIN":
-        return "[](/r/MinnesotaTwins)"
-    elif abr == "NYM":
-        return "[](/r/NewYorkMets)"
-    elif abr == "NYY":
-        return "[](/r/NYYankees)"
-    elif abr == "OAK":
-        return "[](/r/oaklandathletics)"
-    elif abr == "PHI":
-        return "[](/r/Phillies)"
-    elif abr == "PIT":
-        return "[](/r/Buccos)"
-    elif abr == "SD":
-        return "[](/r/Padres)"
-    elif abr == "SEA":
-        return "[](/r/Mariners)"
-    elif abr == "SF":
-        return "[](/r/SFGiants)"
-    elif abr == "STL":
-        return "[](/r/Cardinals)"
-    elif abr == "TB":
-        return "[](/r/TampaBayRays)"
-    elif abr == "TEX":
-        return "[](/r/TexasRangers)"
-    elif abr == "TOR":
-        return "[](/r/TorontoBlueJays)"
-    elif abr == "WSH":
-        return "[](/r/Nationals)"
+    if   abr == "ARI": return "[](/r/azdiamondbacks)"
+    elif abr == "ATL": return "[](/r/Braves)"
+    elif abr == "BAL": return "[](/r/Orioles)"
+    elif abr == "BOS": return "[](/r/RedSox)"
+    elif abr == "CHC": return "[](/r/Cubs)"
+    elif abr == "CWS": return "[](/r/WhiteSox)"
+    elif abr == "CIN": return "[](/r/Reds)"
+    elif abr == "CLE": return "[](/r/WahoosTipi)"
+    elif abr == "COL": return "[](/r/ColoradoRockies)"
+    elif abr == "DET": return "[](/r/MotorCityKitties)"
+    elif abr == "HOU": return "[](/r/Astros)"
+    elif abr == "KC":  return "[](/r/KCRoyals)"
+    elif abr == "LAA": return "[](/r/AngelsBaseball)"
+    elif abr == "LAD": return "[](/r/Dodgers)"
+    elif abr == "MIA": return "[](/r/letsgofish)"
+    elif abr == "MIL": return "[](/r/Brewers)"
+    elif abr == "MIN": return "[](/r/MinnesotaTwins)"
+    elif abr == "NYM": return "[](/r/NewYorkMets)"
+    elif abr == "NYY": return "[](/r/NYYankees)"
+    elif abr == "OAK": return "[](/r/oaklandathletics)"
+    elif abr == "PHI": return "[](/r/Phillies)"
+    elif abr == "PIT": return "[](/r/Buccos)"
+    elif abr == "SD":  return "[](/r/Padres)"
+    elif abr == "SEA": return "[](/r/Mariners)"
+    elif abr == "SF":  return "[](/r/SFGiants)"
+    elif abr == "STL": return "[](/r/Cardinals)"
+    elif abr == "TB":  return "[](/r/TampaBayRays)"
+    elif abr == "TEX": return "[](/r/TexasRangers)"
+    elif abr == "TOR": return "[](/r/TorontoBlueJays)"
+    elif abr == "WSH": return "[](/r/Nationals)"
 
 # Offseason options
 def offOpt():
@@ -332,14 +295,10 @@ Enter a selection: """)
  for the season and initalize every team with a preseason rating halfway\
  between their current one and 1500. Are you sure this is what you want?\
  (y/n): "))
-        if sure.lower() in ('y', 'ye', 'yes'):
-            returnHalfwayToMean()
-        else:
-            offOpt()
-    elif goto == 2:
-        gameIn(k=6)
-    elif goto == 3:
-        mainOpt()
+        if sure.lower() in ('y', 'ye', 'yes'): returnHalfwayToMean()
+        else: offOpt()
+    elif goto == 2: gameIn(k=6)
+    elif goto == 3: mainOpt()
     else:
         print("SELECTION INVALID")
         offOpt()
@@ -363,22 +322,17 @@ def progOpts():
         sums = 0
         for team in teams:
             sums += ratings[team][-1]
-        sums = sums/30
-        if (sums > 1499.99 and sums < 1500.01):
-            print("Score integrity OK")
-        else:
-            print("Error: score average outside acceptable bounds")
+        sums /= 30
+        if (sums > 1499.99 and sums < 1500.01): print("Score integrity OK")
+        else: print("Error: score average outside acceptable bounds")
     mainOpt()
 
 # Aesthetic subroutine that takes a number and returns a "+" if positive, "–"
 # if negative, or "±" if 0.
 def plusOrMinus(num):
-    if   (num > 0):
-        return "+"
-    elif (num < 0):
-        return "–"
-    else:
-        return "±"
+    if   (num > 0): return "+"
+    elif (num < 0): return "–"
+    else:           return "±"
 
 # Subroutine which prints to the console a table in Markdown syntax a sorted
 # ranking of teams' ratings, along with other stats for each team such as
@@ -386,28 +340,25 @@ def plusOrMinus(num):
 # TODO best/worst points in season, Find the top 20 most: lopsided, evenly
 # matched, strongest match.
 # TODO implement report saving
+# TODO fix DOS encoding issues
 def report():
     lastReddit = open('lastReddit.txt', 'r+')
-    oldSort = eval(lastReddit.read())
-    newSort = sorted(ratings.items(),
-                     key=lambda team: team[-1][-1], reverse=True)
+    oldSort    = eval(lastReddit.read())
+    newSort    = sorted(ratings.items(),
+                        key=lambda team: team[-1][-1], reverse=True)
     print("Team | Rating | Change | Instantaneous W-L\* | Expected W-L\**\n\
 :---:|:---:|:---:|:---:|:---:")
     for x in range(0, len(teams)):
-        team = newSort[x][0]
-        oldRank = oldSort[team][0]
-        newRank = x+1
+        team       = newSort[x][0]
+        oldRank    = oldSort[team][0]
+        newRank    = x+1
         absRankChg = abs(newRank-oldRank)
+        oldElo     = oldSort[team][1]
+        newElo     = ratings[team][-1]
 
-        oldElo = oldSort[team][1]
-        newElo = ratings[team][-1]
-
-        if(newRank < oldRank):
-            rankChg = "▲" + str(absRankChg)
-        elif(newRank > oldRank):
-            rankChg = "▼" + str(absRankChg)
-        else:
-            rankChg = "―"
+        if   (newRank < oldRank): rankChg = "▲" + str(absRankChg)
+        elif (newRank > oldRank): rankChg = "▼" + str(absRankChg)
+        else:                     rankChg = "―"
         print(flairify(team), team, "| {0:4.2f} | ".format(newSort[x][1][-1]),
               end="")
         try:
@@ -447,48 +398,42 @@ def badName(bad):
 # team has had over the season. Losses are calculated elsewhere by subtracting
 # this number by the total number of games that team has played.
 def countTeamWins(team):
-    wins = 0
+    wins  = 0
     games = len(ratings[team])-1
-    if games == 0:
-        return 0
+    if games == 0: return 0
     for game in range(1,games):
-        if ratings[team][game] > ratings[team][game - 1]:
-            wins += 1
+        if ratings[team][game] > ratings[team][game - 1]: wins += 1
     return wins
 
 # Accepts a team abbreviation and returns the game resulting in the team's
 # highest Elo rating of the season.
 def teamMaxElo(team):
     maxElo = max(ratings[team])
-    if ratings[team].count(maxElo) > 1:
-        return "multiple"
-    else:
-        return ratings[team].index(maxElo)
+    if ratings[team].count(maxElo) > 1: return "multiple"
+    else:                               return ratings[team].index(maxElo)
 
 # Accepts a team abbreviation and returns the game resulting in the team's
 # lowest Elo rating of the season.
 def teamMinElo(team):
     minElo = min(ratings[team])
-    if ratings[team].count(minElo) > 1:
-        return "multiple"
-    else:
-        return ratings[team].index(minElo)
+    if ratings[team].count(minElo) > 1: return "multiple"
+    else: return ratings[team].index(minElo)
 
-# Automated function that takes a pre-screened team abbreviation and returns
-# a named tuple containing an extrapolated W-L record based on their current
+# Automated function that takes a pre-screened team abbreviation and returns a
+# named tuple containing an extrapolated W-L record based on their current
 # rating (that is, their expected record if the season started today) and their
 # expected W-L record given their current rating and existing record.
 def seasonWins(team):
-    EloBaseWins = 162*expRes(ratings[team][-1], 1500)
+    EloBaseWins   = 162*expRes(ratings[team][-1], 1500)
     EloBaseLosses = 162 - EloBaseWins
-    curWins = countTeamWins(team)
-    expWins = curWins +\
-              (162 - len(ratings[team])+1)*expRes(ratings[team][-1], 1500)
-    expLosses = 162 - expWins
+    curWins       = countTeamWins(team)
+    expWins       = curWins +\
+                   (162 - len(ratings[team])+1)*expRes(ratings[team][-1], 1500)
+    expLosses     = 162 - expWins
 
-    expRec = collections.namedtuple('expRec', 'curW, curL, expW, expL')
-    teamRec = expRec(round(EloBaseWins), round(EloBaseLosses),
-                     round(expWins), round(expLosses))
+    expRec        = collections.namedtuple('expRec', 'curW, curL, expW, expL')
+    teamRec       = expRec(round(EloBaseWins), round(EloBaseLosses),
+                           round(expWins), round(expLosses))
     return teamRec
 
 # Accepts decimal odds of a team winning and prints a "moneyline", or American,
@@ -505,8 +450,7 @@ def probToAmOdds(dec):
     return sign + str(abs(round(AmOdds)))
 
 def mainOpt(goto=0):
-    if(goto==0):
-        goto = input("""\
+    if(goto==0): goto = input("""\
 
 Main menu:
     1. Enter regular season game results
@@ -518,20 +462,16 @@ Main menu:
     7. Program options
     8. Close the program
 Enter a selection: """)
-        goto = int(goto)
+    goto = int(goto)
     print()
-    if goto == 1:
-        gameIn()
-    elif goto == 2:
-        lookup()
-    elif goto == 3:
-        prob()
+    if   goto == 1: gameIn()
+    elif goto == 2: lookup()
+    elif goto == 3: prob()
     elif goto == 4:
         team = input("Enter team abbreviation, or enter 'X'\
  to return to the main menu: ")
         team = team.upper()
-        if team == "X":
-            mainOpt()
+        if team == "X":  mainOpt()
         elif team not in teams:
             print("Team invalid")
             mainOpt(goto=4)
@@ -542,12 +482,9 @@ Enter a selection: """)
             print("     and is EXPECTED to finish the season with a(n)",
                   teamRec.expW, "-", teamRec.expL, "record")
             mainOpt(goto=4)
-    elif goto == 5:
-        report()
-    elif goto == 6:
-        offOpt()
-    elif goto == 7:
-        progOpts()
+    elif goto == 5: report()
+    elif goto == 6: offOpt()
+    elif goto == 7: progOpts()
     elif goto == 8:
         EloList.close()
         sys.exit()
