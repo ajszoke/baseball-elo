@@ -46,8 +46,8 @@ This is free software, and you are welcome to redistribute it
 under certain conditions; type 'show c' for details.
 
 Press 'enter' to accept these terms and continue or type EXIT and press
-enter to exit the program. """)
-    if(ok.upper()=="EXIT"):
+enter to exit the program. """).upper()
+    if ok=="EXIT":
         sys.exit()
     mainOpt()
 
@@ -59,11 +59,9 @@ def gameIn(k=4, hadv=25, again=0, at="None", ht="None",
  enter games out of order. Input 'X' to return to the main menu. Input 'UNDO'\
  to undo the last entered game."))
     while at.upper() not in teams:
-        at = input("Enter away team abbreviation: ")
-        at = at.upper()
-        if at.lower() == "x":
-            mainOpt()
-        elif at.lower() == "undo":
+        at = input("Enter away team abbreviation: ").upper()
+        if   at == "X": mainOpt()
+        elif at == "UNDO":
             if undo == 1:
                 print(textwrap.fill("Error: only the last game entered may be\
  automatically undone. Return to the main menu and manually adjust teams'\
@@ -93,10 +91,9 @@ def gameIn(k=4, hadv=25, again=0, at="None", ht="None",
             continue
         break
     while ht not in teams:
-        ht = input("Enter home team abbreviation: ")
-        ht = ht.upper()
-        if   ht.lower() == "x": mainOpt()
-        elif ht.lower() == "undo":
+        ht = input("Enter home team abbreviation: ").upper()
+        if   ht == "X": mainOpt()
+        elif ht == "UNDO":
             try:
                 print("")
                 reportEloChange(last_at, ratings[last_at][-1],
@@ -176,17 +173,16 @@ def expRes(ht, at, hadv=0):
 def lookup():
     print(textwrap.fill("Enter team abbreviation, or enter 'ALL' to print all \
 ELO ratings, or enter 'x' to return to the main menu:"), end="")
-    team = input(" ")
-    team = team.upper()
-    if   team.lower() == "x": mainOpt()
-    elif team.lower() == "all":
+    team = input(" ").upper()
+    if   team == "X": mainOpt()
+    elif team == "ALL":
         while True:
-            sort = input('Sort by name or rating? ')
-            if sort.lower() in ('n', 'na', 'nam', 'name'):
+            sort = input('Sort by name or rating? ').lower()
+            if sort in ('n', 'na', 'nam', 'name'):
                 for team in teams:
                     print(team.ljust(3), "{0:4.2f}".format(ratings[team][-1]))
                 lookup()
-            elif sort.lower() in ('r', 'ra', 'rat', 'rating', 'rate'):
+            elif sort in ('r', 'ra', 'rat', 'rating', 'rate'):
                 sortRates = sorted(ratings.items(),
                                    key=lambda team: team[-1][-1], reverse=True)
                 for x in range(0, len(teams)):
@@ -203,8 +199,8 @@ ELO ratings, or enter 'x' to return to the main menu:"), end="")
           '(game ', teamMaxElo(team), ')')
     print('          Min:', round(min(ratings[team]), 2),
           '(game ', teamMinElo(team), ')\n')
-    ed = input("Edit ELO rating? (y/n): ")
-    if ed.lower() in ('y', 'ye', 'yes'):
+    ed = input("Edit ELO rating? (y/n): ").lower()
+    if ed in ('y', 'ye', 'yes'):
         old = ratings[team][-1]
         while True:
             try:
@@ -219,31 +215,74 @@ ELO ratings, or enter 'x' to return to the main menu:"), end="")
         reportEloChange(team, old, new)
         print("")
 
-    again = input("Look up/edit more teams? (y/n): ")
-    if again.lower() in ('y', 'ye', 'yes'): lookup()
+    again = input("Look up/edit more teams? (y/n): ").lower()
+    if again in ('y', 'ye', 'yes'): lookup()
     else: mainOpt()
 
 # Provides win probabilities for any user-specified matchup at teams at their
 # current skill levels. Returns percentage and American odds.
-# TODO? provide support for earlier-in-year matchup
-# TODO provide support for avg
 def prob():
-    n = input("Neutral location? (y/n): ")
-    if n.lower() in ('y', 'ye', 'yes'):
-        hadv = 0
+    n = input("Neutral location? (y/n): ").lower()
+    if n in ('y', 'ye', 'yes'): hadv = 0
+    else: hadv = 25
+    print("Enter 'AVG' to compare a team against a straw team with a 1500\
+ rating")
+    t1     = input("Enter team 1/home team abbreviation: ").upper()
+    if t1 == "AVG":
+        t1rate = 1500
     else:
-        hadv = 25
-    t1 = input("Enter team 1/home team abbreviation: ")
-    t1 = t1.upper()
-    t2 = input("Enter team 2/away team abbreviation: ")
-    t2 = t2.upper()
-    t1prob = expRes(ratings[t1][-1], ratings[t2][-1], hadv)
-    print('\n     ', t1.ljust(3), ' win probability: ',
+        while True:
+            gameKey1 = input(textwrap.fill("Enter 'C' to use the team's current\
+ rating, 'B' to use their best rating this year, 'W' to use their worst\
+ rating this year, or a number to use the team's rating after that game this\
+ season. ")).upper()
+            if   gameKey1 == "C":
+                t1rate   = ratings[t1][-1]
+                gameNum1 = len(ratings[t1]) - 1
+            elif gameKey1 == "B":
+                t1rate   = max(ratings[t1])
+                gameNum1 = teamMaxElo(t1)
+            elif gameKey1 == "W":
+                t1rate   = min(ratings[t1])
+                gameNum1 = teamMinElo(t1)
+            elif gameKey1 + 1 < len(ratings[t1]):
+                t1rate   = ratings[t1][gameKey1]
+                gameNum1 = gameKey1
+            else:
+                print("Invalid entry; try again")
+                continue
+            break
+    t2 = input("Enter team 2/away team abbreviation: ").upper()
+    if t2 == "AVG":
+        t2rate = 1500
+    else:
+        while True:
+            gameKey2 = input(textwrap.fill("Enter 'C' to use the team's current\
+ rating, 'B' to use their best rating this year, 'W' to use their worst\
+ rating this year, or a number to use the team's rating after that game this\
+ season.")).upper()
+            if   gameKey2 == "C":
+                t2rate   = ratings[t2][-1]
+                gameNum2 = len(ratings[t2]) - 1
+            elif gameKey2 == "B":
+                t2rate   = max(ratings[t2])
+                gameNum2 = teamMaxElo(t2)
+            elif gameKey2 == "W":
+                t2rate   = min(ratings[t2])
+                gameNum2 = teamMinElo(t2)
+            elif gameKey2 + 1 < len(ratings[t2]):
+                t2rate   = ratings[t2][gameKey2]
+            else:
+                print("Invalid entry; try again")
+                continue
+            break
+    t1prob = expRes(t1rate, t2rate, hadv)
+    print('\n     ', t1.ljust(3), '( game', gameNum1,  ') win probability: ',
           round(100*t1prob, 2), '% (', probToAmOdds(t1prob), ')')
-    print('     ', t2.ljust(3), ' win probability: ',
+    print('     ', t2.ljust(3), '( game', gameNum2,  ') win probability: ',
           round(100*(1-t1prob), 2), '% (', probToAmOdds(1-t1prob), ')')
-    again = input("Calculate more odds? (y/n): ")
-    if again.lower() in ('y', 'ye', 'yes'): prob()
+    again = input("Calculate more odds? (y/n): ").lower()
+    if again in ('y', 'ye', 'yes'): prob()
     else: mainOpt()
 
 # Given a team abbreviation, returns a string used in Reddit markdown to show
@@ -294,8 +333,8 @@ Enter a selection: """)
         sure = input(textwrap.fill("This option will OVERWRITE all saved games\
  for the season and initalize every team with a preseason rating halfway\
  between their current one and 1500. Are you sure this is what you want?\
- (y/n): "))
-        if sure.lower() in ('y', 'ye', 'yes'): returnHalfwayToMean()
+ (y/n): ")).lower()
+        if sure in ('y', 'ye', 'yes'): returnHalfwayToMean()
         else: offOpt()
     elif goto == 2: gameIn(k=6)
     elif goto == 3: mainOpt()
@@ -317,8 +356,8 @@ def returnHalfwayToMean():
     offOpt()
 
 def progOpts():
-    rectyn = input("Check score integrity? (y/n): ")
-    if rectyn.lower() in ('y', 'ye', 'yes'):
+    rectyn = input("Check score integrity? (y/n): ").lower()
+    if rectyn in ('y', 'ye', 'yes'):
         sums = 0
         for team in teams:
             sums += ratings[team][-1]
@@ -346,8 +385,8 @@ def report():
     oldSort    = eval(lastReddit.read())
     newSort    = sorted(ratings.items(),
                         key=lambda team: team[-1][-1], reverse=True)
-    print("Team | Rating | Change | Instantaneous W-L\* | Expected W-L\**\n\
-:---:|:---:|:---:|:---:|:---:")
+    print("Rank | Team | Rating | Change | Instantaneous W-L\* | Expected W-L\
+\**\n:---:|:---:|:---:|:---:|:---:|:---:")
     for x in range(0, len(teams)):
         team       = newSort[x][0]
         oldRank    = oldSort[team][0]
@@ -359,8 +398,8 @@ def report():
         if   (newRank < oldRank): rankChg = "▲" + str(absRankChg)
         elif (newRank > oldRank): rankChg = "▼" + str(absRankChg)
         else:                     rankChg = "―"
-        print(flairify(team), team, "| {0:4.2f} | ".format(newSort[x][1][-1]),
-              end="")
+        print("{0:2d} | {1} {2} | {3:4.2f} | "
+              .format(x+1, flairify(team), team, newSort[x][1][-1]), end="")
         try:
             print(rankChg, end="")
         except UnicodeEncodeError:
@@ -370,9 +409,9 @@ def report():
                 print(" &uarr;" + str(absRankChg))
             else:
                 print("-")
-        print(" (%(dir)s%(val)s) |" %
-            {'dir': str(plusOrMinus(newElo-oldElo)),
-             'val': str(round(abs(newElo-oldElo), 2))}, end=" ")
+        print(" ({0}{1:1.2f}) |"
+            .format(str(plusOrMinus(newElo-oldElo)),
+                    abs(newElo-oldElo)), end=" ")
         teamRec = seasonWins(team)
         print("%(curW)s–%(curL)s | %(expW)s–%(expL)s" %
             {'curW': int(teamRec.curW), 'curL': int(teamRec.curL),
@@ -381,8 +420,8 @@ def report():
  ^expected ^2015 ^record ^if ^the ^season ^started ^today")
     print("\n^\**Team's ^expected ^2015 ^record ^given ^their ^current ^record\
  ^and ^Elo ^rating")
-    save = input("Save report as official? ")
-    if save.lower() in ('y', 'ye', 'yes'):
+    save = input("Save report as official? ").lower()
+    if save in ('y', 'ye', 'yes'):
         pass
     mainOpt()
 
@@ -410,7 +449,7 @@ def countTeamWins(team):
 def teamMaxElo(team):
     maxElo = max(ratings[team])
     if ratings[team].count(maxElo) > 1: return "multiple"
-    else:                               return ratings[team].index(maxElo)
+    else: return ratings[team].index(maxElo)
 
 # Accepts a team abbreviation and returns the game resulting in the team's
 # lowest Elo rating of the season.
@@ -469,9 +508,8 @@ Enter a selection: """)
     elif goto == 3: prob()
     elif goto == 4:
         team = input("Enter team abbreviation, or enter 'X'\
- to return to the main menu: ")
-        team = team.upper()
-        if team == "X":  mainOpt()
+ to return to the main menu: ").upper()
+        if team == "X": mainOpt()
         elif team not in teams:
             print("Team invalid")
             mainOpt(goto=4)
