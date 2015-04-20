@@ -378,13 +378,13 @@ def plusOrMinus(num):
 # change since last rating, W-L info, etc.
 # TODO best/worst points in season, Find the top 20 most: lopsided, evenly
 # matched, strongest match.
-# TODO implement report saving
 # TODO fix DOS encoding issues
 def report():
     lastReddit = open('lastReddit.txt', 'r+')
     oldSort    = eval(lastReddit.read())
     newSort    = sorted(ratings.items(),
                         key=lambda team: team[-1][-1], reverse=True)
+    newReddit  = {}
     print("Rank | Team | Rating | Change | Instantaneous W-L\* | Expected W-L\
 \**\n:---:|:---:|:---:|:---:|:---:|:---:")
     for x in range(0, len(teams)):
@@ -416,13 +416,17 @@ def report():
         print("%(curW)s–%(curL)s | %(expW)s–%(expL)s" %
             {'curW': int(teamRec.curW), 'curL': int(teamRec.curL),
              'expW': int(teamRec.expW), 'expL': int(teamRec.expL)})
+        newReddit[team] = [x+1, newElo]
     print("^\*How ^well ^a ^team ^is ^*currently* ^playing; ^that ^is, ^their\
  ^expected ^2015 ^record ^if ^the ^season ^started ^today")
     print("\n^\**Team's ^expected ^2015 ^record ^given ^their ^current ^record\
  ^and ^Elo ^rating")
-    save = input("Save report as official? ").lower()
+    save = input("Save report as official? (y/n) ").lower()
     if save in ('y', 'ye', 'yes'):
-        pass
+        lastReddit.seek(0)
+        lastReddit.write(str(newReddit))
+        lastReddit.truncate()
+        print("Report stored.")
     mainOpt()
 
 # TODO? run a report for each region with combined Elo, rank, etc
