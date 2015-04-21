@@ -232,10 +232,10 @@ def prob():
         t1rate = 1500
     else:
         while True:
-            gameKey1 = input(textwrap.fill("Enter 'C' to use the team's current\
- rating, 'B' to use their best rating this year, 'W' to use their worst\
- rating this year, or a number to use the team's rating after that game this\
- season. ")).upper()
+            gameKey1 = input(textwrap.fill("Enter 'C' to use the team's\
+ current rating, 'B' to use their best rating this year, 'W' to use their\
+ worst rating this year, or a number to use the team's rating after that game\
+ this season. ")).upper()
             if   gameKey1 == "C":
                 t1rate   = ratings[t1][-1]
                 gameNum1 = len(ratings[t1]) - 1
@@ -257,10 +257,10 @@ def prob():
         t2rate = 1500
     else:
         while True:
-            gameKey2 = input(textwrap.fill("Enter 'C' to use the team's current\
- rating, 'B' to use their best rating this year, 'W' to use their worst\
- rating this year, or a number to use the team's rating after that game this\
- season.")).upper()
+            gameKey2 = input(textwrap.fill("Enter 'C' to use the team's\
+ current rating, 'B' to use their best rating this year, 'W' to use their\
+ worst rating this year, or a number to use the team's rating after that game\
+ this season. ")).upper()
             if   gameKey2 == "C":
                 t2rate   = ratings[t2][-1]
                 gameNum2 = len(ratings[t2]) - 1
@@ -381,10 +381,17 @@ def plusOrMinus(num):
 # TODO fix DOS encoding issues
 def report():
     lastReddit = open('lastReddit.txt', 'r+')
-    oldSort    = eval(lastReddit.read())
+    firstReddit= open('firstReddit.txt', 'r')
     newSort    = sorted(ratings.items(),
                         key=lambda team: team[-1][-1], reverse=True)
     newReddit  = {}
+    oldKey     = input("Enter 'B' to report from beginning of season, or 'L'\
+ to report from last saved report").upper()
+    if   oldKey == "B": oldSort = eval(firstReddit.read())
+    elif oldKey == "L": oldSort = eval(lastReddit.read())
+    else:
+        print("Invalid selection, try again")
+        report()
     print("Rank | Team | Rating | Change | Instantaneous W-L\* | Expected W-L\
 \**\n:---:|:---:|:---:|:---:|:---:|:---:")
     for x in range(0, len(teams)):
