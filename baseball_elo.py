@@ -3,7 +3,7 @@
 #                                                                             #
 #                            Baseball Elo Tracker                             #
 #                                                                             #
-#   /u/LiveBeef's Baseball Elo tracker: track a baseball league's teams'      #
+#   Andrew Szoke's Baseball Elo tracker: track a baseball league's teams'     #
 #   Elo ratings.                                                              #
 #                                                                             #
 #   Copyright (C) 2015 Andrew Szoke <ajszoke@ncsu.edu>                        #
