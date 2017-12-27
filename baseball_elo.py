@@ -227,9 +227,10 @@ def prob():
     else: hadv = 25
     print("Enter 'AVG' to compare a team against a straw team with a 1500\
  rating")
-    t1     = input("Enter team 1/home team abbreviation: ").upper()
+    t1     = input("Enter team 1/away team abbreviation: ").upper()
     if t1 == "AVG":
-        t1rate = 1500
+        t1rate   = 1500
+        gameNum1 = 0
     else:
         while True:
             gameKey1 = input(textwrap.fill("Enter 'C' to use the team's\
@@ -245,16 +246,22 @@ def prob():
             elif gameKey1 == "W":
                 t1rate   = min(ratings[t1])
                 gameNum1 = teamMinElo(t1)
-            elif gameKey1 + 1 < len(ratings[t1]):
-                t1rate   = ratings[t1][gameKey1]
-                gameNum1 = gameKey1
             else:
-                print("Invalid entry; try again")
-                continue
+                try:
+                    gameKey1 = int(gameKey1)
+                    if gameKey1 + 1 < len(ratings[t1]) and gameKey1 >= 0:
+                        t1rate   = ratings[t1][gameKey1]
+                        gameNum1 = gameKey1
+                    else:
+                        print("{0} has not played {1:0d} games"
+                        .format(t1, gameKey1))
+                except TypeError:
+                    print("Invalid entry; try again")
             break
-    t2 = input("Enter team 2/away team abbreviation: ").upper()
+    t2 = input("Enter team 2/home team abbreviation: ").upper()
     if t2 == "AVG":
-        t2rate = 1500
+        t2rate   = 1500
+        gameNum2 = 0
     else:
         while True:
             gameKey2 = input(textwrap.fill("Enter 'C' to use the team's\
@@ -270,17 +277,23 @@ def prob():
             elif gameKey2 == "W":
                 t2rate   = min(ratings[t2])
                 gameNum2 = teamMinElo(t2)
-            elif gameKey2 + 1 < len(ratings[t2]):
-                t2rate   = ratings[t2][gameKey2]
             else:
-                print("Invalid entry; try again")
-                continue
+                try:
+                    gameKey2 = int(gameKey2)
+                    if gameKey2 + 1 < len(ratings[t2]) and gameKey2 >= 0:
+                        t2rate   = ratings[t2][gameKey2]
+                        gameNum2 = gameKey2
+                    else:
+                        print("{0} has not played {1:0d} games"
+                        .format(t2, gameKey2))
+                except TypeError:
+                    print("Invalid entry; try again")
             break
-    t1prob = expRes(t1rate, t2rate, hadv)
-    print('\n     ', t1.ljust(3), '( game', gameNum1,  ') win probability: ',
-          round(100*t1prob, 2), '% (', probToAmOdds(t1prob), ')')
-    print('     ', t2.ljust(3), '( game', gameNum2,  ') win probability: ',
-          round(100*(1-t1prob), 2), '% (', probToAmOdds(1-t1prob), ')')
+    t2prob = expRes(t2rate, t1rate, hadv)
+    print('\n     ', t1.ljust(3), '( game', gameNum1,  ') win probability:',
+          round(100*(1-t2prob), 2), '% (', probToAmOdds(1-t2prob), ')')
+    print('     ', t2.ljust(3), '( game', gameNum2,  ') win probability:',
+          round(100*t2prob, 2), '% (', probToAmOdds(t2prob), ')')
     again = input("Calculate more odds? (y/n): ").lower()
     if again in ('y', 'ye', 'yes'): prob()
     else: mainOpt()
@@ -292,7 +305,7 @@ def flairify(abr):
     elif abr == "ATL": return "[](/r/Braves)"
     elif abr == "BAL": return "[](/r/Orioles)"
     elif abr == "BOS": return "[](/r/RedSox)"
-    elif abr == "CHC": return "[](/r/Cubs)"
+    elif abr == "CHC": return "[](/r/CHICubs)"
     elif abr == "CWS": return "[](/r/WhiteSox)"
     elif abr == "CIN": return "[](/r/Reds)"
     elif abr == "CLE": return "[](/r/WahoosTipi)"
@@ -392,6 +405,16 @@ def report():
     else:
         print("Invalid selection, try again")
         report()
+    print("AL East | AL Central | AL West\n:---:|:---:|:---:")
+    print("{0:4.2f} | {1:4.2f} | {2:4.2f}"
+    .format(regionReport("NYY", "TB", "BOS", "BAL", "TOR"),
+            regionReport("DET", "KC", "CWS", "MIN", "CLE"),
+            regionReport("HOU", "LAA", "OAK", "SEA", "TEX")))
+    print("**NL East** | **NL Central** | **NL West**")
+    print("{0:4.2f} | {1:4.2f} | {2:4.2f}"
+    .format(regionReport("NYM", "ATL", "MIA", "PHI", "WSH"),
+            regionReport("STL", "CHC", "PIT", "CIN", "MIL"),
+            regionReport("LAD", "COL", "SD", "ARI", "SF")))
     print("Rank | Team | Rating | Change | Instantaneous W-L\* | Expected W-L\
 \**\n:---:|:---:|:---:|:---:|:---:|:---:")
     for x in range(0, len(teams)):
@@ -436,9 +459,11 @@ def report():
         print("Report stored.")
     mainOpt()
 
-# TODO? run a report for each region with combined Elo, rank, etc
-def regionReport():
-    pass
+# Called by report(), takes the five teams within a division and returns the
+# average of their ratings.
+def regionReport(t1, t2, t3, t4, t5):
+    return (ratings[t1][-1] + ratings[t2][-1] + ratings[t3][-1] +\
+            ratings[t4][-1] + ratings[t5][-1]) / 5
 
 # TODO Attempts to resolve team-does-not-exist errors elsewhere in the program.
 def badName(bad):
@@ -511,6 +536,7 @@ Main menu:
     6. Postseason/offseason options
     7. Program options
     8. Close the program
+    9. Decimal to moneyline
 Enter a selection: """)
     goto = int(goto)
     print()
@@ -537,6 +563,11 @@ Enter a selection: """)
     elif goto == 8:
         EloList.close()
         sys.exit()
+    elif goto == 9:
+        dec   = float(input("Decimal odds: "))
+        mline = probToAmOdds(dec)
+        print(mline)
+        mainOpt()
     else:
         print("SELECTION INVALID")
         mainOpt()

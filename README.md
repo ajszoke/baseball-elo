@@ -1,5 +1,5 @@
 # Baseball-Elo
-/u/Livebeef's baseball team Elo tracker
+Andrew Szoke's baseball team Elo tracker
 
  This program is designed to keep track of [Elo ratings](http://en.wikipedia.org/wiki/Elo_rating_system) of teams within a normal-rules baseball league. Elo ratings are designed to reduce all information about a team's matchups into a single number: 1500 is average, lower is worse, higher is stronger.
  
